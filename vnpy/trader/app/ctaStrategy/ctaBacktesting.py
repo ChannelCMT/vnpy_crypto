@@ -120,6 +120,8 @@ class BacktestingEngine(object):
         self._hdhEnabled = False
         self._updateRule = "auto"
 
+        self.cross_rule = "best"
+
     def setHistoryUpdateRule(self, rule):
         self._updateRule = rule
 
@@ -585,35 +587,41 @@ class BacktestingEngine(object):
                     # 2. 假设在上一根K线结束(也是当前K线开始)的时刻，策略发出的委托为限价105
                     # 3. 则在实际中的成交价会是100而不是105，因为委托发出时市场的最优价格是100
                     if buyCross and trade.offset == constant.OFFSET_OPEN:
-                        trade.price = min(order.price, buyBestCrossPrice)
+                        # trade.price = min(order.price, buyBestCrossPrice)
+                        trade.price = min(order.price, buyBestCrossPrice) if self.cross_rule == "best" else sellCrossPrice
                         self.strategy.posDict[symbol + "_LONG"] += order.totalVolume
                         self.strategy.eveningDict[symbol + "_LONG"] += order.totalVolume
                         self.strategy.posDict[symbol + "_LONG"] = round(self.strategy.posDict[symbol + "_LONG"], 4)
                         self.strategy.eveningDict[symbol + "_LONG"] = round(self.strategy.eveningDict[symbol + "_LONG"],
                                                                             4)
                     elif buyCross and trade.offset == constant.OFFSET_CLOSE:
-                        trade.price = min(order.price, buyBestCrossPrice)
+                        # trade.price = min(order.price, buyBestCrossPrice)
+                        trade.price = min(order.price, buyBestCrossPrice) if self.cross_rule == "best" else sellCrossPrice
                         self.strategy.posDict[symbol + "_SHORT"] -= order.totalVolume
                         self.strategy.posDict[symbol + "_SHORT"] = round(self.strategy.posDict[symbol + "_SHORT"], 4)
                     elif sellCross and trade.offset == constant.OFFSET_OPEN:
-                        trade.price = max(order.price, sellBestCrossPrice)
+                        # trade.price = max(order.price, sellBestCrossPrice) 
+                        trade.price = max(order.price, sellBestCrossPrice) if self.cross_rule == "best" else buyCrossPrice
                         self.strategy.posDict[symbol + "_SHORT"] += order.totalVolume
                         self.strategy.eveningDict[symbol + "_SHORT"] += order.totalVolume
                         self.strategy.posDict[symbol + "_SHORT"] = round(self.strategy.posDict[symbol + "_SHORT"], 4)
                         self.strategy.eveningDict[symbol + "_SHORT"] = round(
                             self.strategy.eveningDict[symbol + "_SHORT"], 4)
                     elif sellCross and trade.offset == constant.OFFSET_CLOSE:
-                        trade.price = max(order.price, sellBestCrossPrice)
+                        # trade.price = max(order.price, sellBestCrossPrice)
+                        trade.price = max(order.price, sellBestCrossPrice) if self.cross_rule == "best" else buyCrossPrice
                         self.strategy.posDict[symbol + "_LONG"] -= order.totalVolume
                         self.strategy.posDict[symbol + "_LONG"] = round(self.strategy.posDict[symbol + "_LONG"], 4)
 
                     # 现货仓位
                     elif buyCross and trade.offset == constant.OFFSET_NONE:
-                        trade.price = min(order.price, buyBestCrossPrice)
+                        # trade.price = min(order.price, buyBestCrossPrice)
+                        trade.price = min(order.price, buyBestCrossPrice) if self.cross_rule == "best" else sellCrossPrice
                         self.strategy.posDict[symbol + "_LONG"] += order.totalVolume
                         self.strategy.posDict[symbol + "_LONG"] = round(self.strategy.posDict[symbol + "_LONG"], 4)
                     elif sellCross and trade.offset == constant.OFFSET_NONE:
-                        trade.price = max(order.price, sellBestCrossPrice)
+                        # trade.price = max(order.price, sellBestCrossPrice)
+                        trade.price = max(order.price, sellBestCrossPrice) if self.cross_rule == "best" else buyCrossPrice
                         self.strategy.posDict[symbol + "_LONG"] -= order.totalVolume
                         self.strategy.posDict[symbol + "_LONG"] = round(self.strategy.posDict[symbol + "_LONG"], 4)
 
@@ -2169,35 +2177,41 @@ class PatchedBacktestingEngine(BacktestingEngine):
                     # 2. 假设在上一根K线结束(也是当前K线开始)的时刻，策略发出的委托为限价105
                     # 3. 则在实际中的成交价会是100而不是105，因为委托发出时市场的最优价格是100
                     if buyCross and trade.offset == constant.OFFSET_OPEN:
-                        trade.price = min(order.price, buyBestCrossPrice)
+                        # trade.price = min(order.price, buyBestCrossPrice)
+                        trade.price = min(order.price, buyBestCrossPrice) if self.cross_rule == "best" else sellCrossPrice
                         self.strategy.posDict[symbol + "_LONG"] += order.totalVolume
                         self.strategy.eveningDict[symbol + "_LONG"] += order.totalVolume
                         self.strategy.posDict[symbol + "_LONG"] = round(self.strategy.posDict[symbol + "_LONG"], 4)
                         self.strategy.eveningDict[symbol + "_LONG"] = round(self.strategy.eveningDict[symbol + "_LONG"],
                                                                             4)
                     elif buyCross and trade.offset == constant.OFFSET_CLOSE:
-                        trade.price = min(order.price, buyBestCrossPrice)
+                        # trade.price = min(order.price, buyBestCrossPrice)
+                        trade.price = min(order.price, buyBestCrossPrice) if self.cross_rule == "best" else sellCrossPrice
                         self.strategy.posDict[symbol + "_SHORT"] -= order.totalVolume
                         self.strategy.posDict[symbol + "_SHORT"] = round(self.strategy.posDict[symbol + "_SHORT"], 4)
                     elif sellCross and trade.offset == constant.OFFSET_OPEN:
-                        trade.price = max(order.price, sellBestCrossPrice)
+                        # trade.price = max(order.price, sellBestCrossPrice)
+                        trade.price = max(order.price, sellBestCrossPrice) if self.cross_rule == "best" else buyCrossPrice
                         self.strategy.posDict[symbol + "_SHORT"] += order.totalVolume
                         self.strategy.eveningDict[symbol + "_SHORT"] += order.totalVolume
                         self.strategy.posDict[symbol + "_SHORT"] = round(self.strategy.posDict[symbol + "_SHORT"], 4)
                         self.strategy.eveningDict[symbol + "_SHORT"] = round(
                             self.strategy.eveningDict[symbol + "_SHORT"], 4)
                     elif sellCross and trade.offset == constant.OFFSET_CLOSE:
-                        trade.price = max(order.price, sellBestCrossPrice)
+                        # trade.price = max(order.price, sellBestCrossPrice)
+                        trade.price = max(order.price, sellBestCrossPrice) if self.cross_rule == "best" else buyCrossPrice
                         self.strategy.posDict[symbol + "_LONG"] -= order.totalVolume
                         self.strategy.posDict[symbol + "_LONG"] = round(self.strategy.posDict[symbol + "_LONG"], 4)
 
                     # 现货仓位
                     elif buyCross and trade.offset == constant.OFFSET_NONE:
-                        trade.price = min(order.price, buyBestCrossPrice)
+                        # trade.price = min(order.price, buyBestCrossPrice)
+                        trade.price = min(order.price, buyBestCrossPrice) if self.cross_rule == "best" else sellCrossPrice
                         self.strategy.posDict[symbol + "_LONG"] += order.totalVolume
                         self.strategy.posDict[symbol + "_LONG"] = round(self.strategy.posDict[symbol + "_LONG"], 4)
                     elif sellCross and trade.offset == constant.OFFSET_NONE:
-                        trade.price = max(order.price, sellBestCrossPrice)
+                        # trade.price = max(order.price, sellBestCrossPrice)
+                        trade.price = max(order.price, sellBestCrossPrice) if self.cross_rule == "best" else buyCrossPrice
                         self.strategy.posDict[symbol + "_LONG"] -= order.totalVolume
                         self.strategy.posDict[symbol + "_LONG"] = round(self.strategy.posDict[symbol + "_LONG"], 4)
 
