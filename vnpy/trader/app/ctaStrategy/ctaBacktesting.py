@@ -500,7 +500,7 @@ class BacktestingEngine(object):
         new_name = filter(lambda ch: ch in filter_text, str(symbolList))
         symbol_name = ''.join(list(new_name))
         # Channel Fix MicroSec
-        Folder_Name = f'{self.strategy.name.replace("Strategy","")}_{symbol_name}_{datetime.now().strftime("%H%M%f")}'
+        Folder_Name = f'{self.strategy.name.replace("Strategy","")}_{symbol_name}_{datetime.now().strftime("%H%M%f")}_{str(random.randint(1,9))+str(random.randint(1,9))+str(random.randint(1,9))}'
         self.logPath = os.path.join(self.path, Folder_Name[:50])
         if not os.path.isdir(self.logPath):
             os.makedirs(self.logPath)
@@ -1150,6 +1150,7 @@ class BacktestingEngine(object):
         d['totalSlippage'] = totalSlippage
         d['timeList'] = timeList
         d['pnlList'] = pnlList
+        d['tradingStd'] = (np.asarray(pnlList)/capital).std() * 100
         d['capitalList'] = capitalList
         d['drawdownList'] = drawdownList
         d['winningRate'] = winningRate
@@ -1199,6 +1200,8 @@ class BacktestingEngine(object):
         self.output(u'盈利交易平均值\t%s' % formatNumber(d['averageWinning']))
         self.output(u'亏损交易平均值\t%s' % formatNumber(d['averageLosing']))
         self.output(u'盈亏比：\t%s' % formatNumber(d['profitLossRatio']))
+        self.output(u'交易波动率\t%s' % formatNumber(d['profitLossRatio']))
+        self.output(u'交易波动率：\t%s' % formatNumber(d['tradingStd']))
 
         # 绘图
         fig = plt.figure(figsize=(10, 12))
@@ -1565,6 +1568,8 @@ class BacktestingEngine(object):
         theoreticalSRWithoutFee = 0.1155 * np.sqrt(dailyTradeCount * 240)
         calmarRatio = annualizedReturn/abs(maxDdPercent)
 
+        
+
         # 返回结果
         result = {
             'startDate': startDate.strftime("%Y-%m-%d"),
@@ -1676,6 +1681,7 @@ class BacktestingEngine(object):
             self.output(u'策略回测绩效图已保存')
 
             self.strategy_setting.update(result)
+            self.strategy_setting["weightedStd"] = 0.5*(self.strategy_setting["tradingStd"]+self.strategy_setting["returnStd"])
             filename = os.path.join(self.logPath, "BacktestingResult.json")
             with open(filename, 'w') as f:
                 json.dump(self.strategy_setting, f, indent=4)
