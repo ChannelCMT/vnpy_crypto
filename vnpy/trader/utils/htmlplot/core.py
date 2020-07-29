@@ -3,9 +3,9 @@ try:
 except (ImportError, ModuleNotFoundError):
     raise ImportError("No Module named '%s'. Install bokeh through conda: 'conda install bokeh=0.12.14' or pip: 'pip install bokeh==0.12.14'")
 finally:
-    if bokeh.__version__ != "0.12.14":
+    if bokeh.__version__ != "2.1.1":
         import warnings
-        warnings.warn("Expected version of bokeh is 0.12.14, current version is %s" % bokeh.__version__)
+        warnings.warn("Expected version of bokeh is 2.1.1, current version is %s" % bokeh.__version__)
 
 from bokeh.plotting import figure, show, output_file, Figure, ColumnDataSource
 from bokeh.models import HoverTool
@@ -281,8 +281,8 @@ DEFAULT_TOOLTIPS = {
 
 DEFAULT_FORMATER = {
     "trade": {
-        "entryDt": "datetime",
-        "exitDt": "datetime"
+        "@entryDt": "datetime",
+        "@exitDt": "datetime"
     }
 }
 
@@ -370,7 +370,7 @@ class PlotHolder(object):
         else:
             for key, value in data.dtypes.apply(type2format).items():
                 self.tooltips[key] = "@%s%s" % (key, value)
-        self.formatters.update(DEFAULT_FORMATER.get(_type, {}))
+        self.formatters.update(DEFAULT_FORMATER.get(_type, {"@datetime": "datetime"}))
         self.members.append(dict(
             _type=_type,
             data=data.copy(),
@@ -557,5 +557,3 @@ class MultiPlot(object):
     def get_data(self, pos, index):
         holder = self.holders[pos]
         return holder.members[index]["data"].copy()
-
-    

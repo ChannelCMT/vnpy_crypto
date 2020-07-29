@@ -515,7 +515,7 @@ class BacktestingEngine(object):
         """
         if not self.contracts:
             for symbol in setting['symbolList']:
-                self.contracts_info.update({symbo : {}})
+                self.contracts_info.update({symbol : {}})
         else:
             symbolList = []
             for symbol_info in self.contracts:
