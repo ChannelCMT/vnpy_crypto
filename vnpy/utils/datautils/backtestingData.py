@@ -83,6 +83,7 @@ class DailyHDFCache(object):
     CACHE_FILE_FORMAT = re.compile("([0-9]{8}).hd5")
 
     def __init__(self, root="./cache", index="datetime"):
+        print("cache root", root)
         self.root = root
         self.index = index
         self.keep = True
