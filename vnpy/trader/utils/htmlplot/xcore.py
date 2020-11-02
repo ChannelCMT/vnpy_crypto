@@ -543,7 +543,7 @@ class XMultiPlot(object):
                 _plot.resample(fm.time)
         self._resampled = True
 
-    def show(self, do_resample=True):
+    def show(self, engine, do_resample=True):
         if do_resample:
             self.resample()
         self.align()
@@ -554,7 +554,8 @@ class XMultiPlot(object):
             figures.append(figure)
             for _plot in config.plots:
                 _plot.show(figure)
-        output_file(self.filename)
+        # Test Channel 11.2
+        output_file(engine.logPath+'//'+self.filename)
         show(column(figures))
 
     def makeFigure(self, config):
